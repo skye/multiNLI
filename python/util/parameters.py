@@ -21,7 +21,7 @@ def types(s):
         return options[0]
     return s
 
-# Valid genres to train on. 
+# Valid genres to train on.
 genres = ['travel', 'fiction', 'slate', 'telephone', 'government']
 def subtypes(s):
     options = [mod for mod in genres if s in genres]
@@ -35,6 +35,8 @@ parser.add_argument("model_name", type=str, help="Give model name, this will nam
 parser.add_argument("--datapath", type=str, default="../data")
 parser.add_argument("--ckptpath", type=str, default="../logs")
 parser.add_argument("--logpath", type=str, default="../logs")
+
+parser.add_argument("--data_version", type=str, default="1.0")
 
 parser.add_argument("--emb_to_load", type=int, default=None, help="Number of embeddings to load. If None, all embeddings are loaded.")
 parser.add_argument("--learning_rate", type=float, default=0.0004, help="Learning rate for model")
@@ -51,25 +53,25 @@ args = parser.parse_args()
 
 """
 # Check if test sets are available. If not, create an empty file.
-test_matched = "{}/multinli_0.9/multinli_0.9_test_matched_unlabeled.jsonl".format(args.datapath)
+test_matched = "{}/multinli_1.0/multinli_1.0_test_matched_unlabeled.jsonl".format(args.datapath)
 
 if os.path.isfile(test_matched):
-    test_matched = "{}/multinli_0.9/multinli_0.9_test_matched_unlabeled.jsonl".format(args.datapath)
-    test_mismatched = "{}/multinli_0.9/multinli_0.9_test_matched_unlabeled.jsonl".format(args.datapath)
-    test_path = "{}/multinli_0.9/".format(args.datapath)
+    test_matched = "{}/multinli_1.0/multinli_1.0_test_matched_unlabeled.jsonl".format(args.datapath)
+    test_mismatched = "{}/multinli_1.0/multinli_1.0_test_matched_unlabeled.jsonl".format(args.datapath)
+    test_path = "{}/multinli_1.0/".format(args.datapath)
 else:
-    test_path = "{}/multinli_0.9/".format(args.datapath)
+    test_path = "{}/multinli_1.0/".format(args.datapath)
     temp_file = os.path.join(test_path, "temp.jsonl")
     io.open(temp_file, "wb")
     test_matched = temp_file
     test_mismatched = temp_file
 """
 # Check if test sets are available. If not, create an empty file.
-test_matched = "{}/multinli_0.9/multinli_0.9_test_matched.jsonl".format(args.datapath)
+test_matched = "{0}/multinli_{1}/multinli_{1}_test_matched.jsonl".format(args.datapath, args.data_version)
 
 if os.path.isfile(test_matched):
-    test_matched = "{}/multinli_0.9/multinli_0.9_dev_matched.jsonl".format(args.datapath) #"{}/multinli_0.9/multinli_0.9_test_matched.jsonl".format(args.datapath)
-    test_mismatched = "{}/multinli_0.9/multinli_0.9_dev_mismatched.jsonl".format(args.datapath) #"{}/multinli_0.9/multinli_0.9_test_mismatched.jsonl".format(args.datapath)
+    test_matched = "{0}/multinli_{1}/multinli_{1}_dev_matched.jsonl".format(args.datapath, args.data_version)
+    test_mismatched = "{0}/multinli_{1}/multinli_{1}_dev_mismatched.jsonl".format(args.datapath, args.data_version)
     test_path = "{}".format(args.datapath)
 else:
     test_path = "{}".format(args.datapath)
@@ -83,9 +85,9 @@ def load_parameters():
     FIXED_PARAMETERS = {
         "model_type": args.model_type,
         "model_name": args.model_name,
-        "training_mnli": "{}/multinli_0.9/multinli_0.9_train.jsonl".format(args.datapath),
-        "dev_matched": "{}/multinli_0.9/multinli_0.9_dev_matched.jsonl".format(args.datapath),
-        "dev_mismatched": "{}/multinli_0.9/multinli_0.9_dev_mismatched.jsonl".format(args.datapath),
+        "training_mnli": "{0}/multinli_{1}/multinli_{1}_train.jsonl".format(args.datapath, args.data_version),
+        "dev_matched": "{0}/multinli_{1}/multinli_{1}_dev_matched.jsonl".format(args.datapath, args.data_version),
+        "dev_mismatched": "{0}/multinli_{1}/multinli_{1}_dev_mismatched.jsonl".format(args.datapath, args.data_version),
         "test_matched": test_matched,
         "test_mismatched": test_mismatched,
         "training_snli": "{}/snli_1.0/snli_1.0_train.jsonl".format(args.datapath),
@@ -101,7 +103,7 @@ def load_parameters():
         #"word_embedding_dim": 50,
         #"hidden_embedding_dim": 50,
         "seq_length": args.seq_length,
-        "keep_rate": args.keep_rate, 
+        "keep_rate": args.keep_rate,
         "batch_size": 32,
         "learning_rate": args.learning_rate,
         "emb_train": args.emb_train,
@@ -113,4 +115,3 @@ def load_parameters():
 
 def train_or_test():
     return args.test
-
